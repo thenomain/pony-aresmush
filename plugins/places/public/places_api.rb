@@ -2,13 +2,28 @@ module AresMUSH
   module Places
     def self.place_title(place_name, same_place)
       color = Global.read_config("places", "same_place_color")
-      default_format = "%xh%xx[#{place_name}]%xn%R"
-      same_place_format = "#{color}[#{place_name}]%xn%R"
+      prefix = Places.place_prefix(same_place)
+      suffix = Places.place_suffix(same_place)
+      default_format = "#{prefix} #{t('places.place_title', :place_name => place_name )} #{suffix} "
+      same_place_format = "#{prefix}#{color} #{t('places.place_title', :place_name => place_name)} %xn#{suffix} "
       same_place ? same_place_format : default_format
     end
+    
+    def self.place_prefix(same_place)
+      color = Global.read_config("places", "same_place_color")
+      start_marker = Global.read_config("places", "start_marker") || '['
+      same_place ? "#{color}#{start_marker}+%xn" : "%xh%xx#{start_marker}-%xn"
+    end
+    
+    def self.place_suffix(same_place)
+      color = Global.read_config("places", "same_place_color")
+      end_marker = Global.read_config("places", "end_marker") || ']'
+      same_place ? "#{color}+#{end_marker}%xn" : "-#{end_marker}%xn"
+    end
+    
       
     def self.clear_place(char)
-      char.place.delete if char.place
+      char.update(place: nil)
     end
     
     def self.reset_place_if_moved(char)

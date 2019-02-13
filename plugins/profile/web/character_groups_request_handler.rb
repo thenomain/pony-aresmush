@@ -6,7 +6,7 @@ module AresMUSH
         group_key = Global.read_config("website", "character_gallery_group") || "Faction"
         npc_groups = Character.all.select { |c| c.is_npc? && !c.idled_out? }
            .group_by { |c| c.group(group_key) || "" }
-        char_groups = Chargen.approved_chars.group_by { |c| c.group(group_key) || "" }
+        char_groups = Chargen.approved_chars.group_by { |c| c.group(group_key) || "No #{group_key.titlecase}" }
         
         groups = []
         
@@ -47,13 +47,20 @@ module AresMUSH
           }
         end
         
+        idle_chars = Character.all.select { |c| c.idled_out? }.sort_by { |c| c.name }.map { |c| {
+                      name: c.name,
+                      icon: Website.icon_for_char(c)
+                      }
+                    }
+        
         {
           group_names: group_names.each_with_index.map { |g, index| {
             name: g,
             key: g.parameterize,
             active_class: index == 0 ? 'active' : ''   # Stupid bootstrap hack
           }},
-          groups: groups
+          groups: groups,
+          idle: idle_chars
         }
       end
     end

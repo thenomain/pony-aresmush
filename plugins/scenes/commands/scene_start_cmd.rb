@@ -20,7 +20,7 @@ module AresMUSH
           self.privacy = titlecase_arg(args.arg2)
           self.temp = true
         else
-          self.location = enactor_room.name
+          self.location = titlecase_arg(cmd.args)
           self.privacy = "Private"
           self.temp = true
         end
@@ -52,6 +52,10 @@ module AresMUSH
           return
         end
         
+        if self.location == 'Here'
+          self.location = enactor_room.name_and_area
+        end
+          
         scene = Scene.create(owner: enactor, 
             location: self.location, 
             private_scene: self.privacy == "Private",
@@ -68,7 +72,7 @@ module AresMUSH
           room = enactor_room
           room.update(scene: scene)
           scene.update(room: room)
-          room.emit_ooc t('scenes.announce_scene_start', :privacy => self.privacy, :name => enactor_name)
+          room.emit_ooc t('scenes.announce_scene_start', :privacy => self.privacy, :name => enactor_name, :num => scene.id)
         end
       end
     end

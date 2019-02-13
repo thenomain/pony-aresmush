@@ -47,7 +47,7 @@ module AresMUSH
           title: scene.title,
           location: {
             name: scene.location,
-            description: scene.room ? Website.format_markdown_for_html(scene.room.description) : nil,
+            description: scene.room ? Website.format_markdown_for_html(scene.room.expanded_desc) : nil,
             scene_set: scene.room ? Website.format_markdown_for_html(scene.room.scene_set) : nil },
           completed: scene.completed,
           summary: scene.summary,
@@ -56,17 +56,9 @@ module AresMUSH
           is_private: scene.private_scene,
           participants: participants,
           scene_type: scene.scene_type ? scene.scene_type.titlecase : 'unknown',
-          can_edit: enactor && Scenes.can_access_scene?(enactor, scene),
-          poses: scene.poses_in_order.map { |p| { 
-            char: { name: p.character.name, icon: Website.icon_for_char(p.character) }, 
-            order: p.order, 
-            id: p.id,
-            is_setpose: p.is_setpose,
-            is_system_pose: p.is_system_pose?,
-            is_ooc: p.is_ooc,
-            raw_pose: p.pose,
-            can_edit: !p.is_system_pose? && p.can_edit?(enactor),
-            pose: Website.format_markdown_for_html(p.pose) }}
+          can_edit: enactor && Scenes.can_read_scene?(enactor, scene),
+          is_muted: enactor && scene.muters.include?(enactor),
+          poses: scene.poses_in_order.map { |p| Scenes.build_scene_pose_web_data(p, enactor) }
         }
       end
     end

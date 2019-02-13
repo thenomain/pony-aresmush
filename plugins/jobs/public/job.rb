@@ -13,9 +13,7 @@ module AresMUSH
     reference :approval_char, "AresMUSH::Character"
 
     collection :job_replies, "AresMUSH::JobReply"
-    
-    set :readers, "AresMUSH::Character"
-    
+        
     index :category
 
     before_delete :delete_replies
@@ -25,11 +23,17 @@ module AresMUSH
     end
     
     def is_unread?(char)
-      !readers.include?(char)
+      Jobs.is_unread?(self, char)
     end
       
     def is_open?
       self.status != "DONE"
+    end
+    
+    def is_active?
+      return false if self.status == "DONE"
+      return false if self.status == "HOLD"
+      return true
     end
     
     def created_date_str(char)

@@ -1,5 +1,5 @@
 ---
-toc: Scenes
+toc: 4 - Writing the Story
 summary: Starting scenes.
 order: 2
 aliases:
@@ -43,23 +43,16 @@ A scene can either be open (anyone's invited) or private.  Scenes on the grid ar
 
 ## Joining Scenes
 
-To join an open scene, you can use the scene/join command.  To join a private scene, you'll need a meetme invitation (see [Meetme](/help/meetme).
+To join an open scene, you can use the scene/join command.  To join a private scene, you'll need a scene invitation or a [meetme](/help/meetme).
 
 `scenes` - Lists active scenes.
 `scene/join <#>` - Joins a scene.
+`scene/invite <name>[=<scene num>]` - Invites someone to a private scene.
+`scene/uninvite <name>[=<scene num>]` - Withdraws an invitation.
 
 ## Setting Scene Info
 
 You can control several properties about the scene.  These are used for [Scene Logging](/help/logging) and to advise the participants about what's going on.
-
-* Location - Setting the scene's location copies over the description from another room.
-* Title - Scene title.
-* Summary - A summary of the scene.
-* Scene Type - What kind of scene it is.
-* IC Date - When it happened.  (defaults to the date when the scene started)
-* Scene Set - (Optional) A temporary description added to the base room desc.
-
-> **Tip:** You can also use scene/emit to emit a highlighted set pose that isn't saved to the room desc.  Scene sets on empty rooms will be cleared periodically.
 
 You can see the current scene info by typing `scene <#>.`
 
@@ -82,6 +75,10 @@ You should stop a scene when it's over.  Scenes with empty rooms will be stopped
 
 > **Tip:** Admins and characters with the `manage_scenes` permission can stop and delete other people's scenes.
 
+When a scene in a temp room stops, characters are normally sent back to the Offstage lounge.  You can instead choose to be sent to your character's home or workplace, if you've set one with the home or work command.
+
+`scene/home <home, work, ooc>` - Sets your scene home preference.
+
 ## Logging and Poses
 
-The scene system starts a scene log automatically.  To disable this, or for more help with scene logs, including the pose editing commands, see [Scene Logging](/help/logging).
+The scene system starts a scene log automatically.  For more help, see [Scene Logging](/help/logging).

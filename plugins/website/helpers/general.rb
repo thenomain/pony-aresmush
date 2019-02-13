@@ -17,7 +17,7 @@ module AresMUSH
       if request.enactor.is_valid_api_token?(token)
         return nil
       end
-      return { error: t('website.session_expired') } 
+      return { error: t('webportal.session_expired') } 
     end
     
     def self.get_file_info(file_path)
@@ -60,6 +60,13 @@ module AresMUSH
     
     def self.engine_api_keys
       Global.read_config("secrets", "engine_api_keys") || []
+    end
+    
+    def self.can_edit_wiki_file?(actor, folder)
+      return false if !actor
+      wiki_admin = Website.can_manage_wiki?(actor)
+      own_folder = folder.upcase == actor.name_upcase
+      wiki_admin || own_folder
     end
     
   end

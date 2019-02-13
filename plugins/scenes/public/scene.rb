@@ -26,10 +26,11 @@ module AresMUSH
     reference :scene_log, "AresMUSH::SceneLog"
     reference :plot, "AresMUSH::Plot"
     
+    set :invited, "AresMUSH::Character"
     set :watchers, "AresMUSH::Character"
     set :participants, "AresMUSH::Character"
     set :likers, "AresMUSH::Character"
-    set :readers, "AresMUSH::Character"
+    set :muters, "AresMUSH::Character"
     
     before_delete :delete_poses_and_log
     
@@ -55,15 +56,15 @@ module AresMUSH
     end
     
     def mark_read(char)
-      self.readers.add char
+      Scenes.mark_read(self, char)
     end
     
     def is_unread?(char)
-      !self.readers.include?(char)
+      Scenes.is_unread?(self, char)
     end
     
     def mark_unread(except_for_char = nil)
-      self.readers.replace( except_for_char ? [ except_for_char ] : [] )
+      Scenes.mark_unread(self, except_for_char)
     end
     
     def poses_in_order
@@ -129,6 +130,10 @@ module AresMUSH
     
     def likes
       self.likers.count
+    end
+    
+    def url
+      "#{Game.web_portal_url}/scene/#{self.id}"
     end
   end
 end

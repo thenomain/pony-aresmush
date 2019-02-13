@@ -29,6 +29,7 @@ module AresMUSH
         title: request.args[:title],
         icdate: request.args[:icdate],
         shared: completed,
+        date_shared: completed ? Time.now : nil,
         completed: completed,
         plot: plot.blank? ? nil : Plot[plot],
         private_scene: completed ? false : (privacy == "Private"),
@@ -62,6 +63,10 @@ module AresMUSH
         if (completed)
           log = SceneLog.create(scene: scene, log: request.args[:log])
           scene.update(scene_log: log)
+          
+          scene.participants.each do |char|
+            Scenes.handle_scene_participation_achievement(char)
+          end
         end
       
         Scenes.create_scene_temproom(scene)

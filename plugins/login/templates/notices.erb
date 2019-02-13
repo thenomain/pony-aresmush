@@ -1,4 +1,8 @@
 <%= header %>
+<% if motd %>
+<%= motd %>
+
+<% end %>
 <%= mail %>
 <% alts.each do |a| %>
 <% if has_alt_mail(a) %>

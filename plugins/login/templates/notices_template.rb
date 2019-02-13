@@ -43,6 +43,13 @@ module AresMUSH
         event.start_time_standard
       end
       
+      def motd
+        text = Game.master.login_motd
+        if (text && text.length < 78)
+          text = center(text, 78)
+        end
+        text
+      end
     end
   end
 end

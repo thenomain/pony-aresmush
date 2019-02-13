@@ -11,18 +11,29 @@ module AresMUSH
       end
       
       def characters(scene)
-        scene.participants.sort { |p| p.name }
+        scene.participants.select { |p| !p.who_hidden }
+           .sort_by { |p| p.name }
            .map { |p| p.room == scene.room ? p.name : "%xh%xx#{p.name}%xn"}
            .join(", ")
         
       end
       
+      def title(scene)
+        return "##{scene.id} <#{privacy(scene)}>" if scene.private_scene
+        "##{scene.id} <#{privacy(scene)}> - #{scene.title || scene.location}"
+      end
+      
       def organizer(scene)
-        "(#{t('scenes.organizer_title', :name => scene.owner_name )})"
+        "#{t('scenes.organizer_title', :name => scene.owner_name )}"
+      end
+      
+      def location(scene)
+        scene.private_scene ? t('scenes.private') : "#{scene.location} (#{location_type(scene)})"
       end
       
       def last_activity(scene)
-        OOCTime.local_long_timestr(self.enactor, scene.last_activity)
+        return "-" if !scene.last_activity
+        TimeFormatter.format(Time.now - scene.last_activity)
       end
       
       def location_type(scene)

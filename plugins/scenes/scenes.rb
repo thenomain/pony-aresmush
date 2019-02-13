@@ -28,7 +28,7 @@ module AresMUSH
         end
       when "emit"
         case cmd.switch
-        when "set"
+        when "set", "gm"
           return SetPoseCmd
         else
           return PoseCmd
@@ -72,12 +72,16 @@ module AresMUSH
           return SceneCharCmd
         when "addpose"
           return SceneAddPoseCmd
+        when "home"
+          return SceneHomeCmd
         when "join"
           return SceneJoinCmd
         when "location", "privacy", "summary", "title", "type", "icdate", "plot"
           return SceneInfoCmd
         when "delete"
           return SceneDeleteCmd
+        when "invite", "uninvite"
+          return SceneInviteCmd
         when "undo"
           return SceneUndoCmd
         when "replace", "typo"
@@ -94,7 +98,7 @@ module AresMUSH
           return SceneLogCmd
         when "clearlog"
           return SceneLogClearCmd
-        when "startlog", "stoplog"
+        when "enablelog", "disablelog"
           return SceneLogEnableCmd
         when "share"
           return SceneShareCmd
@@ -160,7 +164,9 @@ module AresMUSH
       when "liveScenes"
         return LiveScenesRequestHandler        
       when "liveScene"
-        return LiveSceneRequestHandler   
+        return LiveSceneRequestHandler  
+      when "muteScene"
+        return MuteSceneRequestHandler 
       when "myScenes"
         return MyScenesRequestHandler     
       when "plots"
@@ -173,10 +179,10 @@ module AresMUSH
         return GetSceneRequestHandler
       when "scenes"
         return GetScenesRequestHandler
-      when "sceneTypes"
-        return GetSceneTypesRequestHandler
       when "sceneLocations"
         return GetSceneLocationsHandler
+      when "sceneTypes"
+        return GetSceneTypesRequestHandler
       when "searchScenes"
         return SearchScenesRequestHandler
       when "unwatchScene"

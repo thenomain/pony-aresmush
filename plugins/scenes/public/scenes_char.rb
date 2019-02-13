@@ -6,7 +6,11 @@ module AresMUSH
     attribute :pose_nudge, :type => DataType::Boolean, :default => true
     attribute :pose_nudge_muted, :type => DataType::Boolean
     attribute :pose_word_count, :type => DataType::Integer
+    attribute :scene_home
+    attribute :read_scenes, :type => DataType::Array, :default => []
   
+    before_delete :remove_from_scenes
+    
     def autospace
       self.pose_autospace
     end
@@ -23,6 +27,16 @@ module AresMUSH
     
     def scenes_starring
       Scene.scenes_starring(self)
+    end
+    
+    def unshared_scenes
+      Scene.all.select { |s| s.completed && !s.shared && s.participants.include?(self) }
+    end
+    
+    def remove_from_scenes
+      self.scenes_starring.each do |s|
+        s.participants.delete self
+      end
     end
   end
 end

@@ -68,6 +68,8 @@ module AresMUSH
         return GetWikiTagRequestHandler
 
       ## FILES
+      when "file"
+        return GetFileRequestHandler
       when "deleteFile"
         return FileDeleteRequestHandler
       when "files"
@@ -82,6 +84,8 @@ module AresMUSH
         return GetLogsRequestHandler
       when "log"
         return GetLogRequestHandler
+      when "webError"
+        return WebErrorRequestHandler
       
       ## TINKER
       when "getTinker"

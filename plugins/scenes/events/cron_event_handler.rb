@@ -18,6 +18,15 @@ module AresMUSH
           end
         end
         
+        trending_category = Global.read_config("scenes", "trending_scenes_category")
+        if (!trending_category.blank?)
+          config = Global.read_config("scenes", "trending_scenes_cron")
+          if Cron.is_cron_match?(config, event.time)
+             Global.logger.debug "Trending scenes."
+             post_trending_scenes
+          end
+        end
+        
       end
 
       def clear_watchers
@@ -59,7 +68,7 @@ module AresMUSH
             scene.delete
           elsif (elapsed_days > warn_days && !scene.deletion_warned)
             message = t('scenes.scene_delete_warn', :id => scene.id, :title => scene.title)
-            Mail.send_mail(scene.all_participant_names, t('scenes.scene_delete_warn_subject'), message, nil)
+            Mail.send_mail(scene.participant_names, t('scenes.scene_delete_warn_subject'), message, nil)
             scene.update(deletion_warned: true)
           end
         end
@@ -74,6 +83,19 @@ module AresMUSH
         idle_timeout = Global.read_config("scenes", "idle_scene_timeout_days")
         elapsed_days = (Time.now - last_activity) / 86400
         return (elapsed_days >= idle_timeout)
+      end
+      
+      def post_trending_scenes
+        recent_scenes = Scene.all.select { |s| s.shared && s.likes > 0 && (Time.now - (s.date_shared || s.created_at) < 864000) }
+        trending = recent_scenes.sort_by { |s| -s.likes }[0, 10]
+        
+        template = TrendingScenesTemplate.new(trending)
+        post = template.render
+        
+        Forum.system_post(
+          Global.read_config("scenes", "trending_scenes_category"),
+          t('scenes.trending_scenes_subject'), 
+          post)
       end
     end
   end

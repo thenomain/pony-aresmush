@@ -1,5 +1,5 @@
 ---
-toc: Web Portal
+toc: Formatting Text
 summary: Using Markdown text.
 ---
 # Markdown Formatting
@@ -55,6 +55,8 @@ You can include a gallery of images (similar to what appears on the character pr
 ## Music Player
 
 The built-in music player (based on a WikiDot version by @Blu) lets you add the sound from a YouTube video to your page with a start/stop play button.  All you need is the YouTube video ID.
+
+Note: The music player only works on character pages.
 
 `[[musicplayer E5TsA6CHpII Description]]`
 
@@ -152,3 +154,19 @@ Using the raw `<div></div>`, `<span></span>` and `<pre></pre>` block tags often 
 ## Disabling Extensions
 
 If you want to disable all custom Ares markdown extensions on a page, simply add text [[disableWikiExtensions]] anywhere on the page.  That's probably only necessary on a page like this where you're trying to explain the wiki extensions.
+
+## Files
+
+The Ares web portal has a central file repository.  This allows images to easily be used across multiple pages.   You can use folders to organize the images by page name or any other criteria.  Character gallery images will automatically be put into a folder matching the character name.
+
+You can upload and view available files just by visiting the [File Repository](/files).  Click on any file to view or manage it.
+
+> **Tip:** If you want to overwrite/replace an existing file, be sure the 'overwrite' checkbox is checked.
+
+Once an image file is uploaded, you can use it on any page with:
+
+`[[image folder\filename.jpg]]`  
+
+You can also use it in your character profile as explained in .  If you upload something that is not an image, you can link to it like so:
+
+`[Link Text](\folder\filename.jpg)`

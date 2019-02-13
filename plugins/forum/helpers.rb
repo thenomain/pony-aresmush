@@ -6,6 +6,12 @@ module AresMUSH
       actor.has_permission?("manage_forum")
     end
 
+    # NOTE: May return nil
+    def self.get_forum_prefs(char, category)
+      prefs = char.bbs_prefs
+      return prefs ? prefs.find(bbs_board_id: category.id).first : nil
+    end
+    
     def self.can_write_to_category?(char, category)
       return false if !category
       roles = category.write_roles.to_a
@@ -61,14 +67,16 @@ module AresMUSH
           Forum.mark_read_for_player(author, new_post)
         end
                
-        author_name = client ? author.name : t('forum.system_author')
+        author_name = author ? author.name : t('forum.system_author')
         message = t('forum.new_post', :subject => subject, 
           :category => category.name, 
           :reference => new_post.reference_str,
           :author => author_name)
                 
         Global.notifier.notify_ooc(:new_forum_post, message) do |char|
-          Forum.can_read_category?(char, category)
+          !Forum.is_forum_muted?(char) &&
+          Forum.can_read_category?(char, category) &&
+          !Forum.is_category_hidden?(char, category)
         end
 
         Forum.handle_forum_achievement(author, :post)
@@ -100,7 +108,9 @@ module AresMUSH
       Forum.handle_forum_achievement(author, :reply)
       
       Global.notifier.notify_ooc(:new_forum_post, message) do |char|
-        Forum.can_read_category?(char, category)
+        !Forum.is_forum_muted?(char) &&
+        Forum.can_read_category?(char, category) &&
+        !Forum.is_category_hidden?(char, category)
       end
     end
     
@@ -172,6 +182,44 @@ module AresMUSH
       end
       
       Achievements.award_achievement(char, type, 'community', message)
+    end
+    
+    def self.is_category_hidden?(char, category)
+      return false if !char
+      prefs = Forum.get_forum_prefs(char, category)
+      return prefs ? prefs.hidden : false
+    end
+    
+    def self.visible_categories(char)
+      BbsBoard.all_sorted.select { |b| !Forum.is_category_hidden?(char, b) }
+    end
+    
+    def self.hidden_categories(char)
+      BbsBoard.all_sorted.select { |b| Forum.is_category_hidden?(char, b) }
+    end
+    
+    def self.is_forum_muted?(char)
+      return false if !char
+      return char.is_forum_muted?
+    end
+    
+    def self.is_unread?(post, char)
+      posts = (char.forum_read_posts || [])
+      !posts.include?(post.id)
+    end
+    
+    def self.mark_read(post, char)
+      posts = (char.forum_read_posts || []) << post.id
+      char.update(forum_read_posts: posts)
+    end
+    
+    def self.mark_unread(post)
+      chars = Character.all.select { |c| !Forum.is_unread?(post, c) }
+      chars.each do |char|
+        posts = char.forum_read_posts || []
+        posts.delete post.id
+        char.update(forum_read_posts: posts)
+      end
     end
   end
 end
