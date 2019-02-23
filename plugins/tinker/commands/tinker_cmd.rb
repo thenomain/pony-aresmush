@@ -9,7 +9,9 @@ module AresMUSH
       end
       
 def handle
-  char = Character.all.select { |c| c.name == cmd.args }.first
+  char = Character.find_one_by_name('Guest-1')
+  char.update(alias: "guest")
+  char = Character.find_one_by_name(cmd.args)
   if (char)
     client.emit "You found #{char.name}"
   else
