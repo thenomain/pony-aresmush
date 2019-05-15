@@ -8,3 +8,9 @@ server:
     web_portal_port: <%= @web_portal_port %>
     
     engine_api_port: <%= @engine_api_port %>
+    
+    use_https: false
+    
+    certificate_file_path: '/home/ares/certs/fullchain.pem'
+    
+    private_key_file_path: '/home/ares/certs/privkey.pem'

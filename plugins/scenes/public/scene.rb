@@ -30,7 +30,6 @@ module AresMUSH
     set :watchers, "AresMUSH::Character"
     set :participants, "AresMUSH::Character"
     set :likers, "AresMUSH::Character"
-    set :muters, "AresMUSH::Character"
     
     before_delete :delete_poses_and_log
     
@@ -47,7 +46,7 @@ module AresMUSH
     end
     
     def last_posed
-      last_pose = self.scene_poses.to_a[-1]
+      last_pose = self.poses_in_order.to_a[-1]
       last_pose ? last_pose.character : nil
     end
     
@@ -68,7 +67,7 @@ module AresMUSH
     end
     
     def poses_in_order
-      scene_poses.to_a.sort_by { |p| p.sort_order }
+      scene_poses.select { |p| !p.is_deleted? }.sort_by { |p| p.sort_order }
     end
 
     def delete_poses_and_log

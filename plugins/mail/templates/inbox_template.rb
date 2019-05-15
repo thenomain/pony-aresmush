@@ -48,16 +48,23 @@ module AresMUSH
       # Message sent to.  Note that this is just the individual recipient of THIS delivery,
       # not a list of all people who received the message.
       def sent_to(msg)
-        !msg.character ? t('mail.deleted_recipient') : msg.character.name
+        !msg.character ? t('mail.deleted_character') : msg.character.name
       end
       
       # Message tags, like unread or marked for deletion
       def tags(msg)
         unread = msg.read ? "-" : t('mail.unread_marker')
         trashed = msg.tags.include?(Mail.trashed_tag) ? t('mail.trashed_marker') : "-"
-        " [#{unread}#{trashed}]  "
+        " #{start_marker}#{unread}#{trashed}#{end_marker}  "
       end
      
+      def start_marker
+        Mail.start_marker
+      end
+      
+      def end_marker
+        Mail.end_marker
+      end
     end
   end
 end

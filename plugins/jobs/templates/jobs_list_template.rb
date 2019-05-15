@@ -3,12 +3,13 @@ module AresMUSH
     # Template for the list of all jobs.
     class JobsListTemplate < ErbTemplateRenderer
       
-      attr_accessor :paginator
+      attr_accessor :paginator, :tip
       
-      def initialize(char, paginator, filter = nil)
+      def initialize(char, paginator, tip, filter = nil)
         @char = char
         @paginator = paginator
         @filter = filter || @char.jobs_filter
+        @tip = tip
         super File.dirname(__FILE__) + "/jobs_list.erb"
       end
       
@@ -25,7 +26,7 @@ module AresMUSH
       end
       
       def submitter(job)
-        !job.author ? t('jobs.deleted_author') : job.author.name
+        !job.author ? t('global.deleted_character') : job.author.name
       end
       
       def unread_status(job)

@@ -44,40 +44,15 @@ Finally you can link to external pages.
 
 `[http://somewhere Link Title]`
 
-## Image Gallery
-
-You can include a gallery of images (similar to what appears on the character profile pages).  Just list the folder and filename, one per line.
-
-`[[gallery]]`
-`folder/image1.jpg`
-`folder/image2.jpg`
-`[[/gallery]]`
-
-## Music Player
-
-The built-in music player (based on a WikiDot version by @Blu) lets you add the sound from a YouTube video to your page with a start/stop play button.  All you need is the YouTube video ID.
-
-Note: The music player only works on character pages.
-
-`[[musicplayer E5TsA6CHpII Description]]`
-
-## Collapsible Text
-
-Collapsibles let you show and hide text with the click of a button.
-
-`[[collapsible button text]]`
-`Text you want to show and hide.`
-`[[/collapsible]]`
-
-## Pretty Images
+## Images
 
 For a basic image, the regular markdown syntax will suffice.  Note that images live in the `game/uploads` folder.
 
 `![Image Alt Text](/game/uploads/misc/pic.jpg)`
 
-You can display images with some easy formatting options, including height, width and alignment (left, right or center).  All of the formatting options can be omitted.
+You can display images with some easy formatting options, including height, width and alignment (left, right or center) and a url to link to.  All of the formatting options can be omitted.
 
-`[[image /game/uploads/pic.jpg height=50px width=100px center]]`
+`[[image /game/uploads/pic.jpg height=50px width=100px url=http://google.com center]]`
 
 
 ## Tables
@@ -87,6 +62,33 @@ You can use the extended table syntax for easy tables.
 `| Title 1 | Title 2 | `
 `|-----    |-----    | `
 `| Text    | Text    | `
+
+
+## Image Gallery
+
+You can include a gallery of images (similar to what appears on the character profile pages).  Just list the folder and filename, one per line.
+
+`[[gallery]]`
+`folder/image1.jpg`
+`folder/image2.jpg`
+`[[/gallery]]`
+
+## Social Media
+
+There are several social media codes to make it easy to embed playlists, videos and pinterest boards on your character profiles and wiki pages.
+
+`[[musicplayer E5TsA6CHpII Description]]`
+`[[pinterest Rreader01/agent-carter]]`
+`[[spotify 37i9dQZEVXbLRQDuF5jeBp]]`
+`[[youtube E5TsA6CHpII]]`
+
+## Collapsible Text
+
+Collapsibles let you show and hide text with the click of a button.
+
+`[[collapsible button text]]`
+`Text you want to show and hide.`
+`[[/collapsible]]`
 
 ## Scene, Page and Character Lists
 

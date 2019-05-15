@@ -105,29 +105,9 @@ module AresMUSH
       char.update(shortdesc: Website.format_input_for_mush(chargen_data[:shortdesc]))
       
       if FS3Skills.is_enabled?
-        (chargen_data[:fs3][:fs3_attributes] || []).each do |k, v|
-          FS3Skills.set_ability(nil, char, k, v.to_i)
-        end
-
-        (chargen_data[:fs3][:fs3_action_skills] || []).each do |k, v|
-          FS3Skills.set_ability(nil, char, k, v.to_i)
-          ability = FS3Skills.find_ability(char, k)
-          if (ability)
-            specs = (chargen_data[:fs3][:fs3_specialties] || {})[k] || []
-            ability.update(specialties: specs)
-          end
-        end
-      
-        (chargen_data[:fs3][:fs3_backgrounds] || []).each do |k, v|
-          FS3Skills.set_ability(nil, char, k, v.to_i)
-        end
-      
-        (chargen_data[:fs3][:fs3_languages] || []).each do |k, v|
-          FS3Skills.set_ability(nil, char, k, v.to_i)
-        end
-      
-        (chargen_data[:fs3][:fs3_advantages] || []).each do |k, v|
-          FS3Skills.set_ability(nil, char, k, v.to_i)
+        error = FS3Skills.save_char(char, chargen_data)
+        if (error)
+          alerts << error
         end
       end
       
@@ -168,7 +148,9 @@ module AresMUSH
          t('chargen.approval_post_subject', :name => model.name), 
          Global.read_config("chargen", "post_approval_message"), 
          Game.master.system_character)
-         
+      
+       Chargen.custom_approval(model)
+       
        Global.dispatcher.queue_event CharApprovedEvent.new(Login.find_client(model), model.id)
          
        return nil
@@ -192,6 +174,32 @@ module AresMUSH
          "#{Global.read_config("chargen", "rejection_message")}%R%R#{notes}")
                    
        return nil
+     end
+     
+     def self.build_app_review_info(char)
+       abilities_app = FS3Skills.is_enabled? ? MushFormatter.format(FS3Skills.app_review(char)) : nil
+       demographics_app = MushFormatter.format Demographics.app_review(char)
+       bg_app = MushFormatter.format Chargen.bg_app_review(char)
+       desc_app = MushFormatter.format Describe.app_review(char)
+       ranks_app = Ranks.is_enabled? ? MushFormatter.format(Ranks.app_review(char)): nil
+       hooks_app = MushFormatter.format Chargen.hook_app_review(char)
+
+       custom_review = Chargen.custom_app_review(char)
+       custom_app = custom_review ? MushFormatter.format(custom_review) : nil
+
+       { 
+         abilities: abilities_app,
+         demographics: demographics_app,
+         background: bg_app,
+         desc: desc_app,
+         ranks: ranks_app,
+         hooks: hooks_app,
+         name: char.name,
+         id: char.id,
+         job: char.approval_job ? char.approval_job.id : nil,
+         custom: custom_app,
+         allow_web_submit: Global.read_config("chargen", "allow_web_submit")
+       }
      end
   end
 end

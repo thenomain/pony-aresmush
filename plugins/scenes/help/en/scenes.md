@@ -30,6 +30,7 @@ When you start a scene, you can create a temporary room or start one in the room
 
 `scene/start` - Starts a scene in your current room.
 `scene/start [<area>/]<location name>=<private/open>` - Starts a scene in a temp room.
+`scene/webstart [<area>/]<location name>=<private/open>` - Starts a scene that you intend to play on the web, and doesn't move you there.
 
 > **Tip:** If your location name matches a grid location, the desc will be copied over.  You can use Area/Room for the location name to distinguish between rooms with the same name in different areas.
 
@@ -41,14 +42,18 @@ A scene can either be open (anyone's invited) or private.  Scenes on the grid ar
 
 > **Tip:** It's rude to create a private scene in a public room on the main grid. Use a RP room or temp room instead.
 
-## Joining Scenes
+## Joining and Leaving Scenes
 
-To join an open scene, you can use the scene/join command.  To join a private scene, you'll need a scene invitation or a [meetme](/help/meetme).
+To join an open scene, you can use the scene/join command.  To join a private scene, you'll need a scene invitation or a [meetme](/help/meetme). 
 
 `scenes` - Lists active scenes.
 `scene/join <#>` - Joins a scene.
 `scene/invite <name>[=<scene num>]` - Invites someone to a private scene.
 `scene/uninvite <name>[=<scene num>]` - Withdraws an invitation.
+  
+You can leave a scene by exiting the room or going offstage or by using the scene/leave command to return to your designated scene/home (described in Stopping a Scene below).
+
+`scene/leave` - Leaves a scene and returns to your designated scene home location.
 
 ## Setting Scene Info
 

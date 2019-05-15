@@ -23,13 +23,16 @@ module AresMUSH
       
       scene_pose = ScenePose.create(pose: pose, character: character, scene: scene, is_setpose: is_setpose, is_ooc: is_ooc)
       if (!scene_pose.is_system_pose?)
-        scene.participants.add character
+        Scenes.add_participant(scene, character)
       end
       
       scene.mark_unread(character)
                   
       scene.update(last_activity: Time.now)
-      Scenes.new_scene_activity(scene, scene_pose)
+      data = Scenes.build_scene_pose_web_data(scene_pose, nil, true)
+      data[:pose_order] = Scenes.build_pose_order_web_data(scene)
+
+      Scenes.new_scene_activity(scene, :new_pose, data.to_json)
       if (!is_ooc)
         Scenes.handle_word_count_achievements(character, pose)
       end
@@ -66,6 +69,7 @@ module AresMUSH
       else
         room = enactor.room
         room.update(scene: scene)
+        room.update(pose_order: {})
         scene.update(room: room)
         room.emit_ooc t('scenes.announce_scene_start', :privacy => private_scene ? "Private" : "Open", :name => enactor.name, :num => scene.id)
       end

@@ -69,6 +69,7 @@ module AresMUSH
     end
     
     def self.emit_to_channel(channel, original_msg, title = nil)
+      original_msg = "#{original_msg}".gsub(/%R/i, " ")
       channel.add_to_history "#{title} #{original_msg}"
       channel.characters.each do |c|
         if (!Channels.is_muted?(c, channel))
@@ -81,7 +82,7 @@ module AresMUSH
       end
       
       formatted_msg = "#{title} #{original_msg}"
-      web_message = "#{channel.name.downcase}|#{Website.format_markdown_for_html(formatted_msg)}"
+      web_message = "#{channel.name.downcase}|#{channel.name}|#{Website.format_markdown_for_html(formatted_msg)}"
       Global.client_monitor.notify_web_clients(:new_chat, web_message) do |char|
         char && Channels.is_on_channel?(char, channel) && !Channels.is_muted?(char, channel)
       end
