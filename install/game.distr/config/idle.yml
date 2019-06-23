@@ -34,11 +34,11 @@ idle:
     title: Gender
     value: gender
   - field: group
-    width: 15
+    width: 17
     title: Faction
     value: Faction
   - field: group
-    width: 15
+    width: 17
     title: Position
     value: Position
   shortcuts:

@@ -38,6 +38,11 @@ module AresMUSH
       return nil if !char
       Global.client_monitor.find_client(char)
     end
+    
+    def self.find_web_client(char)
+      return nil if !char
+      Global.client_monitor.find_web_client(char)
+    end
         
     def self.emit_if_logged_in(char, message)
       client = find_client(char)
@@ -54,6 +59,8 @@ module AresMUSH
     end
       
     def self.login_char(char, client)
+      char.update(login_failures: 0)
+
       # Handle reconnect
       existing_client = Login.find_client(char)
       client.char_id = char.id
@@ -72,6 +79,8 @@ module AresMUSH
       charset = [('a'..'z'), ('A'..'Z'), ('0'..'9')].map(&:to_a).flatten
       password = (0...10).map{ charset.to_a[rand(charset.size)] }.join
       char.change_password(password)
+      char.update(login_api_token: '')
+      char.update(login_api_token_expiry: Time.now - 86400*5)
       password
     end
   end
