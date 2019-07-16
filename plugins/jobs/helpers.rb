@@ -203,22 +203,29 @@ module AresMUSH
       Jobs.mark_unread(job)
       Jobs.mark_read(job, author)
       
+      # Submitter would normally be excluded, but if they can access the category we actually 
+      # want to include them.
       if (!notify_submitter)
         submitter = job.author
         if (submitter && !Jobs.can_access_category?(submitter, job.job_category))
           Jobs.mark_read(job, submitter)
         end
       end
-      
-      Global.client_monitor.emit_ooc(message) do |char|
-        char && (Jobs.can_access_category?(char, job.job_category) || notify_submitter && char == job.author)
-      end
-            
+                  
       data = "#{job.id}|#{message}"
       Global.client_monitor.notify_web_clients(:job_update, data) do |char|
         char && (Jobs.can_access_category?(char, job.job_category) || notify_submitter && char == job.author)
       end
+      
+      Global.notifier.notify_ooc(:job_message, message) do |char|
+        char && (Jobs.can_access_category?(char, job.job_category) || notify_submitter && char == job.author)
+      end
             
+      job.all_parties.each do |p|
+        next if p == author
+        next if p == job.author && !notify_submitter
+        Login.notify(p, :job, t('jobs.new_job_activity', :num => job.id), job.id)
+      end
     end
     
     def self.reboot_required_notice

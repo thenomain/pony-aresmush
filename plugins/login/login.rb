@@ -9,6 +9,7 @@ module AresMUSH
     def self.shortcuts
       Global.read_config("login", "shortcuts")
     end
+    
  
     def self.get_cmd_handler(client, cmd, enactor)
       case cmd.root
@@ -17,7 +18,7 @@ module AresMUSH
       when "boot"
         return BootCmd
       when "connect"
-        if (cmd.args.start_with?("guest"))
+        if (cmd.args && cmd.args.start_with?("guest"))
           return TourCmd
         else
           return ConnectCmd
@@ -122,6 +123,8 @@ module AresMUSH
         return ChangePasswordRequestHandler
       when "accountInfo"
         return AccountInfoRequestHandler
+      when "loginNotices"
+        return LoginNoticesRequestHandler
       end
       nil
     end
