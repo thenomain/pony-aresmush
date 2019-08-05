@@ -1128,9 +1128,18 @@ OTHER
   margin-bottom: 5px;
 }
 
+.wiki-breadcrumbs {
+  margin-bottom: 10px;
+}
+
 /*.char-scene-list li:before { content: "\2666  "; }*/
 
 @media (max-width:992px)  { 
+
+.site-title {
+    font-size: 2em;
+    max-height: 50px;
+}
 
 .profile-wrap { 
     padding: 10px; 
