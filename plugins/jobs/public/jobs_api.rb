@@ -1,7 +1,7 @@
 module AresMUSH
   module Jobs
         
-    def self.create_job(category, title, description, author)
+    def self.create_job(category, title, description, author, notify_author = false)
       if (!Jobs.categories.include?(category))
         Global.logger.debug "Invalid job category #{category}."
         return { :job => nil, :error => t('jobs.invalid_category', :categories => Jobs.categories.join(" ")) }
@@ -14,8 +14,12 @@ module AresMUSH
         :status => Global.read_config("jobs", "default_status"))
         
       message = t('jobs.announce_new_job', :number => job.id, :title => job.title, :name => author.name)
-      Jobs.notify(job, message, author, false)
+      Jobs.notify(job, message, author, notify_author)
 
+      Character.all.select { |c| c != author && c.jobs_subscription && Jobs.can_access_category?(c, job.job_category) }.each do |c|
+        Login.notify(c, :job, message, job.id)
+      end
+      
       return { :job => job, :error => nil }
     end
     

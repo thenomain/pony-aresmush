@@ -2,17 +2,14 @@ module AresMUSH
   module Login
 
     def self.terms_of_service
-      use_tos = Global.read_config("login", "use_terms_of_service") 
-      return nil if !use_tos
-      
       begin
         tos_filename = "game/text/tos.txt"
         tos_text = File.read(tos_filename, :encoding => "UTF-8")
       rescue Exception => ex
         Global.logger.warn "Can't read terms of service file: #{ex}"
-        tos_text = t('login.cant_read_tos_text')
+        tos_text = ""
       end
-      return tos_text
+      return tos_text.blank? ? nil : tos_text
     end
     
     # Checks to see if either the IP or hostname is a match with the specified string.
@@ -32,6 +29,14 @@ module AresMUSH
     
     def self.is_online?(char)
       !!Login.find_client(char)
+    end
+    
+    def self.is_online_or_on_web?(char)
+      Login.find_client(char) || Login.find_web_client(char)
+    end
+    
+    def self.is_portal_only?(char)
+      !Login.find_client(char) && Login.find_web_client(char)
     end
     
     def self.find_client(char)
@@ -84,8 +89,8 @@ module AresMUSH
       password
     end
     
-    def self.notify(char, type, message, reference_id, data = "", notify_if_offline = true)
-      unless notify_if_offline
+    def self.notify(char, type, message, reference_id, data = "", notify_if_online = true)
+      unless notify_if_online
         status = Website.activity_status(char)
         return if status == 'game-active' || status == 'web-active'
       end

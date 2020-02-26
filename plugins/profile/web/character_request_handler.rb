@@ -12,41 +12,12 @@ module AresMUSH
         error = Website.check_login(request, true)
         return error if error
         
-        # Generic demographic/group field list for those who want custom displays.
-        all_fields = {}
-        Demographics.all_demographics.each do |d|
-          all_fields[d] = char.demographic(d)
-        end
-        Demographics.all_groups.each do |k, v|
-          all_fields[k.downcase] = char.group(k)
-        end
-        all_fields['rank'] = char.rank
-        all_fields['age'] = char.age
+        
 
+        all_fields = Demographics.build_web_all_fields_data(char, enactor)
+        demographics = Demographics.build_web_demographics_data(char, enactor)
+        groups = Demographics.build_web_groups_data(char)
 
-        demographics = Demographics.visible_demographics(char, enactor).each.map { |d| 
-            {
-              name: d.titleize,
-              key: d.titleize,
-              value: char.demographic(d)
-            }
-          }
-        
-        
-        demographics << { name: t('profile.age_title'), key: 'Age', value: char.age }
-        
-        groups = Demographics.all_groups.keys.sort.map { |g| 
-          {
-            name: g.titleize,
-            value: char.group(g)
-          }
-        }
-        
-        if (Ranks.is_enabled?)
-          groups << { name: t('profile.rank_title'), key: 'Rank', value: char.rank }
-        end
-          
-          
         profile = char.profile.each_with_index.map { |(section, data), index| 
           {
             name: section.titlecase,
@@ -55,6 +26,13 @@ module AresMUSH
             active_class: index == 0 ? 'active' : ''  # Stupid bootstrap hack
           }
         }
+        
+        if (char.profile_gallery.empty?)
+          gallery_files = Profile.character_page_files(char) || []
+        else
+          gallery_files = char.profile_gallery.select { |g| g =~ /\w\.\w/ }
+        end
+          
         
         relationships_by_category = Profile.relationships_by_category(char)
         relationships = relationships_by_category.map { |category, relationships| {
@@ -70,8 +48,17 @@ module AresMUSH
            }
         }}
         
+        details = char.details.map { |name, desc| {
+          name: name,
+          desc: Website.format_markdown_for_html(desc)
+        }}
+        can_manage = enactor && Profile.can_manage_char_profile?(enactor, char)
         
-        show_background = (char.on_roster? || char.bg_shared || Chargen.can_view_bgs?(enactor)) && !char.background.blank?
+        if (char.background.blank?)
+          show_background = false
+        else
+          show_background = can_manage || char.on_roster? || char.bg_shared || Chargen.can_view_bgs?(enactor)
+        end
 
         
         files = Profile.character_page_files(char)
@@ -83,6 +70,22 @@ module AresMUSH
           fs3 = nil
         end
         
+        if Manage.is_extra_installed?("traits")
+          traits = Traits.get_traits_for_web_viewing(char, enactor)
+        else
+          traits = nil
+        end
+        
+        if Manage.is_extra_installed?("fate")
+          fate = Fate.get_web_sheet(char, enactor)
+        else
+          fate = nil
+        end
+        
+        if (enactor)
+          Login.mark_notices_read(enactor, :achievement)
+        end
+          
         {
           id: char.id,
           name: char.name,
@@ -97,23 +100,28 @@ module AresMUSH
           handle: char.handle ? char.handle.name : nil,
           status_message: Profile.get_profile_status_message(char),
           tags: char.profile_tags,
-          can_manage: enactor && Profile.can_manage_char_profile?(enactor, char),
+          can_manage: can_manage,
           profile: profile,
           relationships: relationships,
           last_online: OOCTime.local_long_timestr(enactor, char.last_on),
-          profile_gallery: (char.profile_gallery || {}).map { |g| Website.get_file_info(g) },
+          profile_gallery: gallery_files.map { |g| Website.get_file_info(g) },
           background: show_background ? Website.format_markdown_for_html(char.background) : nil,
           description: Website.format_markdown_for_html(char.description),
+          details: details,
           rp_hooks: char.rp_hooks ? Website.format_markdown_for_html(char.rp_hooks) : '',
           desc: char.description,
           playerbit: char.is_playerbit?,
           fs3: fs3,
+          traits: traits,
+          fate: fate,
           files: files,
           last_profile_version: char.last_profile_version ? char.last_profile_version.id : nil,
           achievements: Achievements.is_enabled? ? Achievements.build_achievements(char) : nil,
           
           roster: self.build_roster_info(char),
           idle_notes: char.idle_notes ? Website.format_markdown_for_html(char.idle_notes) : nil,
+          custom: CustomCharFields.get_fields_for_viewing(char, enactor),
+          show_notes: char == enactor || Utils.can_manage_notes?(enactor)
           
         }
       end

@@ -65,14 +65,14 @@ module AresMUSH
           relationships: relationships,
           relationships_category_order: char.relationships_category_order.join(","),
           profile: profile,
-          gallery: (char.profile_gallery || {}).map { |f| Website.get_file_info(f) },
+          profile_gallery: (char.profile_gallery || []).join(' '),
           tags: char.profile_tags,
           files: files, 
           profile_image: char.profile_image ? Website.get_file_info(char.profile_image) : nil,
           profile_icon: char.profile_icon ? Website.get_file_info(char.profile_icon) : nil,
           bg_shared: char.bg_shared,
           lastwill: Website.format_input_for_html(char.idle_lastwill),
-          
+          custom: CustomCharFields.get_fields_for_editing(char, enactor)
         }
       end
     end

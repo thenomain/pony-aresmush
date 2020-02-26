@@ -17,9 +17,10 @@ module AresMUSH
                 
         return { chargen_locked: true } if Chargen.is_chargen_locked?(char)
         
+        all_demographics = Demographics.all_demographics
         demographics = {}
         
-        Demographics.all_demographics.select { |d| d != 'birthdate' }.each do |d| 
+        all_demographics.select { |d| d != 'birthdate' }.each do |d| 
           demographics[d.downcase] = 
             {
               name: d.titleize,
@@ -27,7 +28,9 @@ module AresMUSH
             }
         end
         
-        demographics['age'] = { name: t('profile.age_title'), value: char.birthdate ? OOCTime.format_date_for_entry(char.birthdate) : char.age }
+        if (all_demographics.include?('birthdate'))
+          demographics['age'] = { name: t('profile.age_title'), value: char.birthdate ? OOCTime.format_date_for_entry(char.birthdate) : char.age }
+        end
         
         groups = {}
         
@@ -50,6 +53,11 @@ module AresMUSH
           fs3 = nil
         end
         
+        if Manage.is_extra_installed?("traits")
+          traits = Traits.get_traits_for_web_editing(char, char)
+        else
+          traits = nil
+        end
           
         hooks = Website.format_input_for_html(char.rp_hooks)
         
@@ -65,7 +73,9 @@ module AresMUSH
           desc: Website.format_input_for_html(char.description),
           shortdesc: Website.format_input_for_html(char.shortdesc),
           lastwill: Website.format_input_for_html(char.idle_lastwill),
-          fs3: fs3
+          fs3: fs3,
+          traits: traits,
+          custom: Profile::CustomCharFields.get_fields_for_chargen(char)
         }
       end
     end

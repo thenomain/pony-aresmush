@@ -29,12 +29,12 @@ module AresMUSH
         end
         
         tags = (request.args[:tags] || []).map { |t| t.downcase }.select { |t| !t.blank? }
-        gallery = (request.args[:gallery] || []).map { |g| g.downcase }
+        gallery = (request.args[:profile_gallery] || '').split.map { |g| g.downcase }
         profile_image = build_image_path(char, request.args[:profile_image])
         profile_icon = build_image_path(char, request.args[:profile_icon])
-        char.update(profile_gallery: gallery)
         char.update(profile_image: profile_image)
         char.update(profile_icon: profile_icon)
+        char.update(profile_gallery: gallery)
         char.update(profile_tags: tags)
         
         relationships = {}
@@ -56,6 +56,8 @@ module AresMUSH
         relation_category_order = (request.args[:relationships_category_order] || "").split(',')
         char.update(relationships_category_order: relation_category_order)
         
+        CustomCharFields.save_fields_from_profile_edit(char, request.args)
+        
         ## DO PROFILE LAST SO IT TRIGGERS THE SOURCE HISTORY UPDATE
         profile = {}
         (request.args[:profile] || {}).each do |name, text|
@@ -63,7 +65,7 @@ module AresMUSH
         end
         char.set_profile(profile, enactor)
         
-        Achievements.award_achievement(enactor, "profile_edit", 'portal', "Edited your character profile.")
+        Achievements.award_achievement(enactor, "profile_edit")
         
         
         {    

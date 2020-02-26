@@ -54,7 +54,7 @@ module AresMUSH
         case cmd.switch
         when "catchup"
           return NoticesCatchupCmd
-        else
+        when nil, "unread"
           return NoticesCmd
         end
       when "onconnect"
@@ -121,6 +121,8 @@ module AresMUSH
         return RoleChangedEventHandler
       when "ConnectionEstablishedEvent"
         return ConnectionEstablishedEventHandler
+      when "CharIdledOutEvent"
+        return CharIdledOutEventHandler
       end
       nil
     end

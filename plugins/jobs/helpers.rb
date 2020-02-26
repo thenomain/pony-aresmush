@@ -145,21 +145,30 @@ module AresMUSH
     end
     
     def self.comment(job, author, message, admin_only)
-      JobReply.create(:author => author, 
+      reply = JobReply.create(:author => author, 
         :job => job,
         :admin_only => admin_only,
         :message => message)
+        
+      data = {
+        job_id: job.id,
+        reply_id: reply.id,
+        admin_only: admin_only,
+        author: { name: author.name, icon: Website.icon_for_char(author), id: author.id},
+        message: Website.format_markdown_for_html(message),
+        type: 'job_reply'
+      }
       if (admin_only)
         notification = t('jobs.discussed_job', :name => author.name, :number => job.id, :title => job.title)
-        Jobs.notify(job, notification, author, false)
+        Jobs.notify(job, notification, author, data, false, false)
       else
         notification = t('jobs.responded_to_job', :name => author.name, :number => job.id, :title => job.title)
-        Jobs.notify(job, notification, author)
+        Jobs.notify(job, notification, author, data, true, false)
       end
     end
     
-    def self.can_access_job?(enactor, job)
-      !Jobs.check_job_access(enactor, job)
+    def self.can_access_job?(enactor, job, allow_author = false)
+      !Jobs.check_job_access(enactor, job, allow_author)
     end
     
     def self.check_job_access(enactor, job, allow_author = false)
@@ -167,7 +176,7 @@ module AresMUSH
         return nil if enactor == job.author
         return nil if job.participants.include?(enactor)
       end
-      return t('dispatcher.not_allowed') if !Jobs.can_access_jobs?(enactor)
+      return t('jobs.cant_view_job') if !Jobs.can_access_jobs?(enactor)
       return t('jobs.cant_access_category') if !Jobs.can_access_category?(enactor, job.job_category)
       return nil
     end
@@ -199,51 +208,43 @@ module AresMUSH
       Global.read_config("jobs", "open_status")
     end
         
-    def self.notify(job, message, author, notify_submitter = true)
+    def self.notify(job, message, author, data = nil, notify_participants = true, add_to_job = true)
+      
+      if (add_to_job)
+        JobReply.create(:author => author, 
+          :job => job,
+          :admin_only => false,
+          :message => message)
+      end
+      
       Jobs.mark_unread(job)
       Jobs.mark_read(job, author)
       
-      # Submitter would normally be excluded, but if they can access the category we actually 
-      # want to include them.
-      if (!notify_submitter)
-        submitter = job.author
-        if (submitter && !Jobs.can_access_category?(submitter, job.job_category))
-          Jobs.mark_read(job, submitter)
-        end
-      end
-                  
-      data = "#{job.id}|#{message}"
+      all_parties = job.all_parties
+      
+      data = "#{job.id}|#{message}|#{data.to_json}"
       Global.client_monitor.notify_web_clients(:job_update, data) do |char|
-        char && (Jobs.can_access_category?(char, job.job_category) || notify_submitter && char == job.author)
+        char && (Jobs.can_access_category?(char, job.job_category) || notify_participants && all_parties.include?(char))
       end
       
       Global.notifier.notify_ooc(:job_message, message) do |char|
-        char && (Jobs.can_access_category?(char, job.job_category) || notify_submitter && char == job.author)
+        char && (Jobs.can_access_category?(char, job.job_category) || notify_participants && all_parties.include?(char))
       end
             
       job.all_parties.each do |p|
+        
+        # If they can't see the change, don't send them a notification.
+        # Also mark it read so it doesn't show up on their unread list unnecessarily.
+        if (!notify_participants && !Jobs.can_access_category?(p, job.job_category))
+          Jobs.mark_read(job, p)
+          next
+        end
+        
+        # No need for notification if you did it.
         next if p == author
-        next if p == job.author && !notify_submitter
         Login.notify(p, :job, t('jobs.new_job_activity', :num => job.id), job.id)
       end
-    end
-    
-    def self.notify_for_query(author, job)
-      message = t('jobs.job_query_created', :job => job.id, :title => job.title)
-      Global.notifier.notify_ooc(:job_message, message) do |char|
-        char && char == author
-      end
-      data = "#{job.id}|#{message}"
-      Global.client_monitor.notify_web_clients(:job_update, data) do |char|
-        char && char == author
-      end
-      
-      jobs = author.read_jobs || []
-      jobs.delete job.id.to_s
-      author.update(read_jobs: jobs)
-      
-      Login.notify(author, :job, t('jobs.new_job_activity', :num => job.id), job.id)
-    end
+    end    
     
     def self.reboot_required_notice
       File.exist?('/var/run/reboot-required') ? t('jobs.reboot_required') : nil
@@ -251,14 +252,14 @@ module AresMUSH
 
     def self.change_job_title(enactor, job, title)
       job.update(title: title)
-      notification = t('jobs.updated_job', :number => job.id, :title => job.title, :name => enactor.name)
+      notification = t('jobs.updated_job_title', :number => job.id, :title => job.title, :name => enactor.name)
       Jobs.notify(job, notification, enactor)
     end
         
     def self.change_job_category(enactor, job, category_name)
       category = JobCategory.named(category_name)
       job.update(job_category: category)
-      notification = t('jobs.updated_job', :number => job.id, :title => job.title, :name => enactor.name)
+      notification = t('jobs.updated_job_category', :number => job.id, :title => job.title, :name => enactor.name)
       Jobs.notify(job, notification, enactor)
     end
     
@@ -286,6 +287,13 @@ module AresMUSH
     
     def self.is_unread?(job, char)
       !(char.read_jobs || []).include?(job.id.to_s)
+    end
+    
+    def self.has_participant_by_name?(job, name)
+      name_upcase = "#{name}".upcase
+      return true if job.author && (job.author.name.upcase == name_upcase)
+      return true if job.participants.any? { |p| p.name.upcase == name_upcase }
+      return false
     end
     
   end
