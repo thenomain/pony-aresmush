@@ -42,4 +42,9 @@ killares
 # Game directory
 # -----------------------------
 # /game/
-# edited out so I can edit directly from the githib
+# edited out so I can edit directly from the github
+
+# Custom
+# -----------------------------
+/game/config/sites.yml
+# I'm assured that I could just do sites.yml, since gitignore is only for pushes and not pulls, but it broke me.
