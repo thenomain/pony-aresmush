@@ -1,6 +1,7 @@
 ---
 forum:
   shortcuts:
+    bb: forum
     bbs: forum
     bbread: forum
     bbscan: forum/scan
@@ -13,12 +14,16 @@ forum:
     bbcomment: forum/reply
     bbremove: forum/delete
     bbmove: forum/move
+    bb/remove: forum/delete
     bbs/remove: forum/delete
+    bb/read: forum
     bbs/read: forum
     bbnewgroup: forum/createcat
     bbcleargroup: forum/deletecat
     bbarchive: forum/archive
+    bb/desc: forum/describe
     bbs/desc: forum/describe
+    bb/newgroup: forum/createcat
     bbs/newgroup: forum/createcat
     bb/new: forum/new
   achievements:

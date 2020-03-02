@@ -17,4 +17,4 @@
                                        |                         |
                                        | http://www.aresmush.com |
           %xx%xhASCII Art modified from jgs%xn  +-------------------------+
-TEST TEST TEST
+%x201TEST%xn %x30TEST%xn %xRTEST%xn

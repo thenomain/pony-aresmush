@@ -1,37 +1,60 @@
 ---
 demographics:
+# -- age
   min_age: 18
   max_age: 65
-  required_properties:
-  - played by
-  - hair
-  - eyes
-  - skin
-  - height
-  - physique
-  - full name
-  - gender
-  - birthdate
-  nickname_field: callsign
+# -- nickname
+  nickname_field: nickname
   nickname_format: "%{name} (%{nickname})"
+# -- genders
+  genders:
+    Male:
+      possessive_pronoun: his
+      subjective_pronoun: he
+      objective_pronoun: him
+      noun: man
+    Female:
+      possessive_pronoun: her
+      subjective_pronoun: she
+      objective_pronoun: her
+      noun: woman
+    Other:
+      possessive_pronoun: their
+      subjective_pronoun: they
+      objective_pronoun: them
+      noun: person
+# -- i have no idea what this does
   disable_auto_shortcuts: false
-  editable_properties:
-  - full name
-  - hair
-  - physique
-  - callsign
-  - gender
+# -- demographics, required and otherwise
   demographics:
-  - played by
-  - hair
-  - eyes
-  - skin
-  - height
-  - physique
-  - full name
-  - gender
-  - birthdate
-  - callsign
+    - played by
+    - hair
+    - eyes
+    - skin
+    - height
+    - physique
+    - full name
+    - gender
+    - birthdate
+    - nickname
+  required_properties:
+    - played by
+    - hair
+    - eyes
+    - skin
+    - height
+    - physique
+    - full name
+    - gender
+    - birthdate
+  editable_properties:
+    - full name
+    - hair
+    - physique
+    - callsign
+    - gender
+  private_properties: []
+# -- groups
   groups:
     Faction:
       desc: Military faction.
@@ -78,6 +101,7 @@ demographics:
         Medical Support: Other medical personnel.
         Deck Crew: Air wing support/maintenance personnel.
         Other: Any other position.
+# -- shortcuts: another thing I don't know what it does
   shortcuts:
     groups: group
     colonies: group colony
@@ -87,6 +111,7 @@ demographics:
     actor: demographic/set played by=
     fullname: demographic/set full name=
     playedby: demographic/set played by=
+# -- "help text" for the commands created by the above
   help_text:
     actor: "%xcactor <actor>%xn - See 'help actors'."
     physique: "%xcphysique <build/body type>%xn - athletic, wiry, slim, pudgy, etc."
@@ -95,7 +120,8 @@ demographics:
     eyes: "%xceyes <eye color>%xn"
     skin: "%xcskin <complexion>%xn"
     birthdate: "%xcbirthdate <mm/dd/yyy>%xn or %xcage <years>%xn"
-    callsign: "%xccallsign <callsign>%xn - Non-pilots may leave blank or enter a nickname."
+    nickname: "%xnickname <nickname>%xn - Non-pilots may leave blank or enter a nickname."
+# -- census fields what now?
   census_fields:
   - field: name
     width: 28
@@ -112,20 +138,3 @@ demographics:
     width: 20
     title: Position
     value: Position
-  private_properties: []
-  genders:
-    Male:
-      possessive_pronoun: his
-      subjective_pronoun: he
-      objective_pronoun: him
-      noun: man
-    Female:
-      possessive_pronoun: her
-      subjective_pronoun: she
-      objective_pronoun: her
-      noun: woman
-    Other:
-      possessive_pronoun: their
-      subjective_pronoun: they
-      objective_pronoun: them
-      noun: person
