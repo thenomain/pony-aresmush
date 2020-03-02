@@ -1,62 +1,47 @@
 ---
 idle:
-  " idle_setting_help":
-  - idle_exempt_roles: Will this confuse the system?
-  - monthly_reminder_cron: Let's find out!
-  - arrivals_category: It seems to be, yes.
-  arrivals_category: New Arrivals
-  days_before_idle: 30
-  default_contact: Admin
-  idle_category: Announcements
   idle_exempt_roles:
-  - admin
-  - builder
-  - coder
-  - guest
+    - admin
+    - builder
+    - coder
+    - guest
+  monthly_reminder_cron: {}
+  monthly_reminder_title: Monthly Chores
+  monthly_reminder: It's time to run the idle sweep!
+  reminder_category: MISC
+  idle_category: Announcements
+  days_before_idle: 30
+  arrivals_category: New Arrivals
+  default_contact: Admin
   idle_warn_msg: You haven't played in awhile and your character is in danger of idling
     out.
-  monthly_reminder: It's time to run the idle sweep!
-  monthly_reminder_cron:
-    day: 
-  monthly_reminder_title: Monthly Chores
-  reminder_category: MISC
-  roster_welcome_msg: Welcome!  You may wish to check your %xcnotes%xn and web portal
-    profile page for any notes left by the prior player.  Type %xhonstage%xn to go
-    forth and RP.
+  use_roster: true
   shortcuts:
     idle/add: idle/action
     roster/update: roster/add
     roster/contact: roster/add
     roster/notes: roster/note
     idle/notes: idle/note
-  use_roster: true
-  roster_fields:
-  - field: name
-    width: 28
-    title: Name
-  - field: demographic
-    width: 10
-    title: Gender
-    value: gender
-  - field: group
-    width: 20
-    title: Faction
-    value: Faction
-  - field: group
-    width: 20
-    title: Position
-    value: Position
-  roster_arrival_msg: |-
-    %{name} has been claimed off the roster.
-
-    Position: %{position}
-
-    RP Hooks:
-    %{rp_hooks}
-  roster_app_template: |-
-    Tell us why you want to play this character:
-
-
-    If you're not submitting this from an existing character, provide an email where we can get back to you:
+  roster_arrival_msg: "%{name} has been claimed off the roster.\n\nPosition: %{position}\n\nRP Hooks:\n%{rp_hooks}"
+  roster_welcome_msg: Welcome!  You may wish to check your %xcnotes%xn and web portal
+    profile page for any notes left by the prior player.  Type %xhonstage%xn to go
+    forth and RP.
+  roster_app_template: "Tell us why you want to play this character:\n\n\nIf you're not submitting this from an existing character, provide an email where we can get back to you:"
   roster_app_category: APP
   restrict_roster: false
+  roster_fields:
+    - field: name
+      width: 20
+      title: Name
+    - field: demographic
+      width: 10
+      title: Gender
+      value: gender
+    - field: group
+      width: 17
+      title: Faction
+      value: Faction
+    - field: group
+      width: 17
+      title: Position
+      value: Position
