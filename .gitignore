@@ -46,5 +46,5 @@ killares
 
 # Custom
 # -----------------------------
-/game/config/sites.yml
+sites.yml
 # I'm assured that I could just do sites.yml, since gitignore is only for pushes and not pulls, but it broke me.
