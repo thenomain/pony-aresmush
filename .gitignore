@@ -41,4 +41,5 @@ killares
 
 # Game directory
 # -----------------------------
-/game/
+# /game/
+# edited out so I can edit directly from the githib
