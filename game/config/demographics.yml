@@ -51,7 +51,7 @@ demographics:
     - full name
     - hair
     - physique
-    - callsign
+    - nickname
     - gender
   private_properties: []
 # -- groups
