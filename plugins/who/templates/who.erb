@@ -1,6 +1,6 @@
 <%= header %>
 <%= center( mush_name, 78 ) %>
-<%= divider %>
+<%= divider( "test" ) %>
 %xh<% fields.each do |f| %><%= show_title(f) %> <% end %>%xn
 <% chars_by_handle.each do |c| %>
 <% fields.each do |f| %><%= show_field(c, f)%> <% end %>

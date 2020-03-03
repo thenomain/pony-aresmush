@@ -23,8 +23,17 @@ module AresMUSH
       "%lf"
     end
     
-    def divider
-      "%ld"
+    # def divider
+    #   "%ld"
+    # end
+
+    def divider(text="", width=78)
+      if text=="" and width==78
+        "%ld"
+      else
+        template = DividerWithTextTemplate.new(text)
+        template.render
+      end
     end
     
     def line_with_text(text)
