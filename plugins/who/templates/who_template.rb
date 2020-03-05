@@ -1,14 +1,14 @@
 module AresMUSH
   module Who
     class WhoTemplate < ErbTemplateRenderer
-      
+
       # NOTE!  Because so many fields are shared between the who and where templates,
       # some are defined in a common file.
       include CommonWhoFields
 
-      # here is Theno's desire to add even more
+      # here is Faraday's answer to Theno's desire to add even more templates
       include Utils::TemplateFormatterExtensions
-    
+
       attr_accessor :online_chars
       
       def initialize(online_chars)
