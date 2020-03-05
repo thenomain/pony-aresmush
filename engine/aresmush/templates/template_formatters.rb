@@ -22,18 +22,9 @@ module AresMUSH
     def footer
       "%lf"
     end
-    
-    # def divider
-    #   "%ld"
-    # end
 
-    def divider(text="", width=78)
-      if text=="" and width==78
-        "%ld"
-      else
-        template = DividerWithTextTemplate.new(text)
-        template.render
-      end
+    def divider
+      "%ld"
     end
     
     def line_with_text(text)

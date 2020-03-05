@@ -5,6 +5,9 @@ module AresMUSH
       # NOTE!  Because so many fields are shared between the who and where templates,
       # some are defined in a common file.
       include CommonWhoFields
+
+      # here is Theno's desire to add even more
+      include Utils::TemplateFormatterExtensions
     
       attr_accessor :online_chars
       
